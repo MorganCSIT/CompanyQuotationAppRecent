@@ -76,7 +76,41 @@ export default function ProductManagement() {
       })
         .then((res) => res.json())
         .then((json) => {
-          console.log("Fetch Result", json);
+          //succesfully deleted
+          console.log("Delete Result", json);
+          for (let i=0; i<products.length; i++){
+            if (products[i]._id === product._id) {
+              products.splice(i,1) ;
+              break;
+            }
+          }
+          const rows = products.map((e, i) => {
+            return (
+              <tr key={i}>
+                <td>
+                  <FaPenAlt
+                    onClick={() => {
+                      handleUpdate(e);
+                    }}
+                  />
+                  &nbsp; &nbsp;
+                  <FaTrashAlt
+                    onClick={() => {
+                      handleDelete(e);
+                    }}
+                  />
+                </td>
+                <td>{e.code}</td>
+                <td>{e.name}</td>
+                <td>{e.price}</td>
+              </tr>
+            );
+          });
+
+          setProducts(products);
+          setProductRows(rows);
+
+          
           handleClose();
         });
     }
