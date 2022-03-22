@@ -120,7 +120,33 @@ export default function ProductManagement() {
       })
         .then((res) => res.json())
         .then((json) => {
-          console.log("Fetch Result", json);
+          console.log("Post Result", json);
+          products.push(json)
+          const rows = products.map((e, i) => {
+            return (
+              <tr key={i}>
+                <td>
+                  <FaPenAlt
+                    onClick={() => {
+                      handleUpdate(e);
+                    }}
+                  />
+                  &nbsp; &nbsp;
+                  <FaTrashAlt
+                    onClick={() => {
+                      handleDelete(e);
+                    }}
+                  />
+                </td>
+                <td>{e.code}</td>
+                <td>{e.name}</td>
+                <td>{e.price}</td>
+              </tr>
+            );
+          });
+  
+          setProducts(products);
+          setProductRows(rows);
           handleClose();
         });
     } else {
@@ -147,7 +173,43 @@ export default function ProductManagement() {
       })
         .then((res) => res.json())
         .then((json) => {
-          console.log("Fetch Result", json);
+
+          console.log("PUT Result", json);
+          for (let i=0; i<products.length; i++) {
+            if (products[i]._id === updatedProduct._id) {
+              console.log(products[i], updatedProduct)
+              products[i] = updatedProduct;
+              break;
+            }
+          }
+
+          const rows = products.map((e, i) => {
+            return (
+              <tr key={i}>
+                <td>
+                  <FaPenAlt
+                    onClick={() => {
+                      handleUpdate(e);
+                    }}
+                  />
+                  &nbsp; &nbsp;
+                  <FaTrashAlt
+                    onClick={() => {
+                      handleDelete(e);
+                    }}
+                  />
+                </td>
+                <td>{e.code}</td>
+                <td>{e.name}</td>
+                <td>{e.price}</td>
+              </tr>
+            );
+          });
+
+          setProducts(updatedProduct);
+          setProductRows(rows);
+
+          
           handleClose();
         });
     }
