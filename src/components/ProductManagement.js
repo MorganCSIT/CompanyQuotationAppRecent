@@ -18,17 +18,15 @@ export default function ProductManagement() {
   const [productRows, setProductRows] = useState([]);
   const [modeAdd, setModeAdd] = useState(false);
 
-  const [ product, setProduct] = useState( {
-    code: '', 
-    name: '',
+  const [product, setProduct] = useState({
+    code: "",
+    name: "",
     price: 0,
-  })
+  });
 
-  const refCode = useRef()
-  const refName = useRef()
-  const refPrice = useRef()
-  
- 
+  const refCode = useRef();
+  const refName = useRef();
+  const refPrice = useRef();
 
   useEffect(() => {
     fetch(`${API_URL}/products`)
@@ -36,11 +34,19 @@ export default function ProductManagement() {
       .then((data) => {
         const rows = data.map((e, i) => {
           return (
-            <tr key = {i}>
+            <tr key={i}>
               <td>
-                <FaPenAlt onClick={() => {handleUpdate(e)}}/>
+                <FaPenAlt
+                  onClick={() => {
+                    handleUpdate(e);
+                  }}
+                />
                 &nbsp; &nbsp;
-                <FaTrashAlt onClick={() => {}} />
+                <FaTrashAlt
+                  onClick={() => {
+                    handleDelete(e);
+                  }}
+                />
               </td>
               <td>{e.code}</td>
               <td>{e.name}</td>
@@ -61,14 +67,29 @@ export default function ProductManagement() {
     setModeAdd(false);
   };
 
+  const handleDelete = (product) => {
+    console.log(product);
+    if (window.confirm(`Are you sure you want to delete [${product.name}]?`)) {
+      fetch(`${API_URL}/products/${product._id}`, {
+        method: "DELETE", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors",
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          console.log("Fetch Result", json);
+          handleClose();
+        });
+    }
+  };
+
   const handleShow = () => setShow(true);
 
   const handleUpdate = (product) => {
-    console.log("Update Product", product)
-    refCode.current = product.code
-    setProduct(product)
-    setShow(true)
-  }
+    console.log("Update Product", product);
+    refCode.current = product.code;
+    setProduct(product);
+    setShow(true);
+  };
 
   const handleShowAdd = () => {
     setShow(true);
@@ -76,64 +97,61 @@ export default function ProductManagement() {
   };
 
   const handleFormAction = () => {
-    if(modeAdd) {
+    if (modeAdd) {
       const newProduct = {
         code: refCode.current.value,
         name: refName.current.value,
-        price: refPrice.current.value
+        price: refPrice.current.value,
       };
-        console.log(newProduct);
+      console.log(newProduct);
 
-
-        fetch(`${API_URL}/products`, {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-          mode: 'cors', // no-cors, *cors, same-origin
-          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-          // credentials: 'same-origin', // include, *same-origin, omit
-          headers: {
-            'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          redirect: 'follow', // manual, *follow, error
-          referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-          body: JSON.stringify(newProduct) // body data type must match "Content-Type" header
-        })
-        .then(res => res.json())
-        .then(json => {
-          console.log("Fetch Result", json)
-          handleClose()
+      fetch(`${API_URL}/products`, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        // credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          "Content-Type": "application/json",
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(newProduct), // body data type must match "Content-Type" header
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          console.log("Fetch Result", json);
+          handleClose();
         });
     } else {
-
       //update product
       const updatedProduct = {
         _id: product._id,
         code: refCode.current.value,
         name: refName.current.value,
-        price: refPrice.current.value
+        price: refPrice.current.value,
       };
 
       fetch(`${API_URL}/products`, {
-        method: 'PUT', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        method: "PUT", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
         // credentials: 'same-origin', // include, *same-origin, omit
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
           // 'Content-Type': 'application/x-www-form-urlencoded',
         },
-        redirect: 'follow', // manual, *follow, error
-        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
         body: JSON.stringify(updatedProduct), // body data type must match "Content-Type" header
       })
-      .then(res => res.json())
-      .then(json => {
-        console.log("Fetch Result", json)
-        handleClose()
-      });
+        .then((res) => res.json())
+        .then((json) => {
+          console.log("Fetch Result", json);
+          handleClose();
+        });
     }
-    };
-
+  };
 
   return (
     <>
@@ -178,13 +196,17 @@ export default function ProductManagement() {
             <Row>
               <Col>Name</Col>
               <Col>
-                <input type="text"  ref={refName} defaultValue={product.name}/>
+                <input type="text" ref={refName} defaultValue={product.name} />
               </Col>
             </Row>
             <Row>
               <Col>Price</Col>
               <Col>
-                <input type="number" ref={refPrice} defaultValue={product.price} />
+                <input
+                  type="number"
+                  ref={refPrice}
+                  defaultValue={product.price}
+                />
               </Col>
             </Row>
           </Form>
@@ -194,7 +216,7 @@ export default function ProductManagement() {
             Close
           </Button>
           <Button variant="primary" onClick={handleFormAction}>
-              {modeAdd ? 'Add' : 'Update'}
+            {modeAdd ? "Add" : "Update"}
           </Button>
         </Modal.Footer>
       </Modal>
