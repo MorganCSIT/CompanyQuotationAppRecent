@@ -18,20 +18,27 @@ export default function ProductManagement() {
   const [productRows, setProductRows] = useState([]);
   const [modeAdd, setModeAdd] = useState(false);
 
+  const [ product, setProduct] = useState( {
+    code: '', 
+    name: '',
+    price: 0,
+  })
+
   const refCode = useRef()
   const refName = useRef()
   const refPrice = useRef()
+  
  
 
   useEffect(() => {
     fetch(`${API_URL}/products`)
       .then((res) => res.json())
       .then((data) => {
-        const rows = data.map((e) => {
+        const rows = data.map((e, i) => {
           return (
-            <tr>
+            <tr key = {i}>
               <td>
-                <FaPenAlt onClickCapture={handleShow} />
+                <FaPenAlt onClick={() => {handleUpdate(e)}}/>
                 &nbsp; &nbsp;
                 <FaTrashAlt onClick={() => {}} />
               </td>
@@ -55,6 +62,13 @@ export default function ProductManagement() {
   };
 
   const handleShow = () => setShow(true);
+
+  const handleUpdate = (product) => {
+    console.log("Update Product", product)
+    refCode.current = product.code
+    setProduct(product)
+    setShow(true)
+  }
 
   const handleShowAdd = () => {
     setShow(true);
@@ -87,9 +101,36 @@ export default function ProductManagement() {
         .then(res => res.json())
         .then(json => {
           console.log("Fetch Result", json)
-        })
+          handleClose()
+        });
     } else {
+
       //update product
+      const updatedProduct = {
+        _id: product._id,
+        code: refCode.current.value,
+        name: refName.current.value,
+        price: refPrice.current.value
+      };
+
+      fetch(`${API_URL}/products`, {
+        method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        // credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(updatedProduct), // body data type must match "Content-Type" header
+      })
+      .then(res => res.json())
+      .then(json => {
+        console.log("Fetch Result", json)
+        handleClose()
+      });
     }
     };
 
@@ -131,19 +172,19 @@ export default function ProductManagement() {
             <Row>
               <Col>Code</Col>
               <Col>
-                <input type="text" ref={refCode} />
+                <input type="text" ref={refCode} defaultValue={product.code} />
               </Col>
             </Row>
             <Row>
               <Col>Name</Col>
               <Col>
-                <input type="text"  ref={refName} />
+                <input type="text"  ref={refName} defaultValue={product.name}/>
               </Col>
             </Row>
             <Row>
               <Col>Price</Col>
               <Col>
-                <input type="number" ref={refPrice} />
+                <input type="number" ref={refPrice} defaultValue={product.price} />
               </Col>
             </Row>
           </Form>
